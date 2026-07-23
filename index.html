@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>東京・鎌倉 2026</title>
+<style>
+:root{
+  --ink:#1B2B4A;
+  --ink-mid:#3A4F72;
+  --ink-lite:rgba(27,43,74,.42);
+  --paper:#F5EFE0;
+  --paper-card:#FDFAF3;
+  --rust:#D4622A;
+  --rust-soft:#F3DDD2;
+  --teal:#4A7C6F;
+  --teal-soft:#D6E8E4;
+  --gold:#E8B84B;
+  --gold-soft:#FAF0D0;
+  --blue:#4A72A8;
+  --blue-soft:#DDE6F4;
+  --purple:#6B5AA0;
+  --purple-soft:#EAE6F8;
+  --line:#E0D8C5;
+  --nav-h:60px;
+  --sb:env(safe-area-inset-bottom,0px);
+  --st:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;}
+html,body{background:var(--paper);color:var(--ink);min-height:100vh;overscroll-behavior:none;}
+body{font-family:"Noto Sans TC","PingFang TC","Hiragino Sans","Helvetica Neue",sans-serif;font-size:15px;}
+a{color:inherit;text-decoration:none;}
+button{font-family:inherit;border:none;background:none;cursor:pointer;}
+::-webkit-scrollbar{width:0;height:0;}
+
+/* shell */
+#app{max-width:540px;margin:0 auto;min-height:100vh;}
+
+/* top bar */
+.topbar{
+  position:sticky;top:0;z-index:40;
+  padding:calc(var(--st) + 13px) 18px 13px;
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.topbar .left .ey{font-size:10px;letter-spacing:.18em;color:var(--gold);font-weight:700;text-transform:uppercase;margin-bottom:3px;}
+.topbar .left h1{font-family:"Noto Serif TC",Georgia,serif;font-size:20px;font-weight:700;color:#fff;letter-spacing:.05em;}
+.topbar .badge{
+  background:var(--rust);color:#fff;border-radius:9px;
+  padding:6px 11px;text-align:center;line-height:1.15;
+}
+.topbar .badge .n{font-family:"Noto Serif TC",serif;font-size:22px;font-weight:700;display:block;}
+.topbar .badge .l{font-size:9px;letter-spacing:.08em;opacity:.85;}
+
+/* main */
+main{padding:16px 14px calc(var(--nav-h) + 18px + var(--sb));}
+.view{display:none;}
+.view.active{display:block;animation:up .2s ease;}
+@keyframes up{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:none;}}
+
+/* bottom nav */
+.botnav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:540px;z-index:50;
+  background:var(--ink);border-top:1px solid rgba(255,255,255,.07);
+  display:flex;padding-bottom:var(--sb);
+}
+.botnav button{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  gap:4px;padding:9px 4px 8px;
+  color:rgba(255,255,255,.35);font-size:10px;font-weight:600;letter-spacing:.04em;
+  position:relative;
+}
+.botnav button svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.botnav button.on{color:var(--gold);}
+.botnav button.on::after{
+  content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:24px;height:2.5px;background:var(--gold);border-radius:2px;
+}
+
+/* day tabs */
+.dayrail{display:flex;gap:7px;overflow-x:auto;padding:2px 0 14px;scrollbar-width:none;}
+.dayrail::-webkit-scrollbar{display:none;}
+.dtab{
+  flex:0 0 auto;border-radius:11px;padding:8px 12px;min-width:72px;
+  background:var(--paper-card);border:1.5px solid var(--line);
+  display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;
+  transition:background .15s,border-color .15s;
+}
+.dtab .dw{font-size:9px;font-weight:700;color:var(--ink-lite);letter-spacing:.05em;}
+.dtab .dd{font-size:13px;font-weight:700;}
+.dtab .di{font-size:15px;}
+.dtab.on{background:var(--ink);border-color:var(--ink);}
+.dtab.on .dw,.dtab.on .dd{color:rgba(255,255,255,.7);}
+
+/* day hero */
+.dhero{
+  border-radius:14px;padding:16px 18px;margin-bottom:16px;
+  background:var(--ink);position:relative;overflow:hidden;
+}
+.dhero::before{
+  content:"";position:absolute;width:120px;height:120px;border-radius:50%;
+  background:rgba(255,255,255,.04);right:-20px;top:-30px;
+}
+.dhero .dtag{
+  display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;
+  background:var(--gold);color:var(--ink);border-radius:5px;
+  padding:3px 8px;margin-bottom:9px;text-transform:uppercase;
+}
+.dhero h2{font-family:"Noto Serif TC",serif;font-size:23px;font-weight:700;color:#fff;margin-bottom:4px;}
+.dhero .ds{font-size:12.5px;color:rgba(255,255,255,.5);line-height:1.55;}
+
+/* timeline */
+.tl{position:relative;padding-left:44px;}
+.tl::before{
+  content:"";position:absolute;left:15px;top:10px;bottom:10px;width:1.5px;
+  background:repeating-linear-gradient(to bottom,var(--line) 0 5px,transparent 5px 10px);
+}
+.ti{position:relative;margin-bottom:11px;}
+.tidot{
+  position:absolute;left:-44px;top:15px;
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  background:var(--paper-card);border:1.5px solid var(--line);z-index:2;
+}
+.ti.food .tidot{background:#FDF0E8;border-color:var(--rust);}
+.ti.transit .tidot{background:var(--blue-soft);border-color:var(--blue);}
+.ti.sight .tidot{background:var(--teal-soft);border-color:var(--teal);}
+.ti.shop .tidot{background:var(--gold-soft);border-color:var(--gold);}
+.ti.run .tidot{background:var(--purple-soft);border-color:var(--purple);}
+.ti.rest .tidot{background:var(--paper-card);border-color:var(--line);}
+
+.ticard{
+  background:var(--paper-card);border:1px solid var(--line);
+  border-radius:12px;padding:11px 13px;
+  box-shadow:0 1px 5px rgba(27,43,74,.06);
+}
+.titop{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:3px;}
+.titime{font-size:11.5px;font-weight:700;color:var(--ink-lite);letter-spacing:.04em;}
+.ticat{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+.food .ticat{background:var(--rust-soft);color:var(--rust);}
+.transit .ticat{background:var(--blue-soft);color:var(--blue);}
+.sight .ticat{background:var(--teal-soft);color:var(--teal);}
+.shop .ticat{background:var(--gold-soft);color:#8A6010;}
+.run .ticat{background:var(--purple-soft);color:var(--purple);}
+.rest .ticat{background:var(--paper);color:var(--ink-lite);}
+
+.tititle{font-size:15px;font-weight:700;line-height:1.4;margin-bottom:2px;}
+.tisub{font-size:12.5px;color:var(--ink-mid);line-height:1.55;}
+.tinote{
+  display:inline-block;margin-top:7px;
+  font-size:11.5px;font-weight:600;color:var(--teal);
+  background:var(--teal-soft);padding:4px 9px;border-radius:6px;line-height:1.5;
+}
+.tiacts{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap;}
+
+/* map buttons */
+.mbtn{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:12px;font-weight:700;color:#fff;
+  border-radius:8px;padding:7px 12px;
+}
+.mbtn svg{width:12px;height:12px;flex-shrink:0;fill:currentColor;}
+.mbtn.green{background:var(--teal);box-shadow:0 2px 5px rgba(74,124,111,.28);}
+.mbtn.blue{background:var(--blue);box-shadow:0 2px 5px rgba(74,114,168,.28);}
+.mbtn.rust{background:var(--rust);box-shadow:0 2px 5px rgba(212,98,42,.28);}
+
+/* section */
+.shead{
+  display:flex;align-items:center;gap:9px;
+  font-family:"Noto Serif TC",serif;font-size:19px;font-weight:700;margin-bottom:14px;
+}
+.shead::before{content:"";width:4px;height:17px;background:var(--rust);border-radius:2px;flex-shrink:0;}
+.ssub{font-size:12.5px;color:var(--ink-mid);margin:-8px 0 16px;line-height:1.6;}
+
+/* cards */
+.card{
+  background:var(--paper-card);border:1px solid var(--line);
+  border-radius:14px;padding:14px 15px;margin-bottom:12px;
+  box-shadow:0 1px 5px rgba(27,43,74,.05);
+}
+.chead{display:flex;align-items:center;gap:11px;margin-bottom:11px;}
+.cico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.ctitle{font-size:15.5px;font-weight:700;}
+.cmeta{font-size:11.5px;color:var(--ink-lite);margin-top:1px;}
+.kv{display:flex;justify-content:space-between;align-items:baseline;gap:10px;padding:7px 0;border-bottom:1px solid rgba(27,43,74,.07);}
+.kv:last-child{border:none;}
+.kv .k{font-size:12.5px;color:var(--ink-lite);flex-shrink:0;}
+.kv .v{font-size:13px;font-weight:600;text-align:right;line-height:1.45;}
+
+/* flight */
+.flight{display:flex;align-items:center;gap:6px;margin:10px 0;}
+.flight .ap{flex:1;text-align:center;}
+.flight .ap .code{font-family:"Noto Serif TC",serif;font-size:22px;font-weight:700;}
+.flight .ap .name{font-size:10px;color:var(--ink-lite);margin-top:1px;}
+.flight .mid{flex-shrink:0;text-align:center;color:var(--rust);}
+.flight .mid .arr{font-size:20px;}
+.flight .mid .dur{font-size:9.5px;color:var(--ink-lite);font-weight:700;display:block;}
+
+/* hotel */
+.hotelstrip{
+  height:80px;border-radius:10px;margin-bottom:12px;
+  background:linear-gradient(125deg,#1B2B4A 0%,#2C4070 100%);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-family:"Noto Serif TC",serif;font-size:14px;letter-spacing:.12em;
+  position:relative;overflow:hidden;
+}
+.hotelstrip::before{
+  content:"浅";position:absolute;right:-8px;top:-20px;
+  font-size:110px;opacity:.06;font-family:"Noto Serif TC",serif;
+}
+.notebox{
+  background:var(--gold-soft);border:1px solid rgba(232,184,75,.3);
+  border-radius:10px;padding:11px 13px;font-size:12.5px;color:#7A5500;line-height:1.6;margin-top:8px;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<header class="topbar">
+  <div class="left">
+    <div class="ey">旅行計劃 · 2026</div>
+    <h1>東京 · 鎌倉</h1>
+  </div>
+  <div class="badge"><span class="n">5</span><span class="l">DAYS</span></div>
+</header>
+
+<main>
+
+  <!-- ═══ 每日行程 ═══ -->
+  <section class="view active" id="v-days">
+    <div class="dayrail" id="rail"></div>
+    <div id="dayout"></div>
+  </section>
+
+  <!-- ═══ 交通 ═══ -->
+  <section class="view" id="v-transit">
+    <div class="shead">交通總覽</div>
+    <p class="ssub">所有航班、路線、市區移動資訊，點按鈕直接開 Google 地圖導航。</p>
+
+    <div class="card">
+      <div class="chead">
+        <div class="cico" style="background:var(--blue-soft)">✈️</div>
+        <div><div class="ctitle">去程航班</div><div class="cmeta">2026 / 7 / 24（五）</div></div>
+      </div>
+      <div class="flight">
+        <div class="ap"><div class="code">TPE</div><div class="name">桃園機場 T1</div></div>
+        <div class="mid"><div class="arr">→</div><div class="dur">約 3.5 hr</div></div>
+        <div class="ap"><div class="code">NRT</div><div class="name">成田機場 T1</div></div>
+      </div>
+      <div class="kv"><span class="k">出發時間</span><span class="v">13:00 前往機場 ／ 15:30 起飛</span></div>
+      <div class="kv"><span class="k">抵達</span><span class="v">20:00 成田機場 T1</span></div>
+      <div class="kv"><span class="k">入境後交通</span><span class="v">京成電鐵 Access 特急</span></div>
+      <div class="kv"><span class="k">路線</span><span class="v">成田機場 → 淺草站 → 本所吾妻橋站</span></div>
+      <div class="tiacts" style="margin-top:10px">
+        <a class="mbtn blue" target="_blank" href="https://www.google.com/maps/search/?api=1&query=成田機場第一航廈"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>成田機場 T1</a>
+        <a class="mbtn green" target="_blank" href="https://www.google.com/maps/search/?api=1&query=本所吾妻橋駅"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>本所吾妻橋站</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="chead">
+        <div class="cico" style="background:var(--gold-soft)">✈️</div>
+        <div><div class="ctitle">回程航班</div><div class="cmeta">2026 / 7 / 28（二）</div></div>
+      </div>
+      <div class="flight">
+        <div class="ap"><div class="code">NRT</div><div class="name">成田機場 T1</div></div>
+        <div class="mid"><div class="arr">→</div><div class="dur">約 3.5 hr</div></div>
+        <div class="ap"><div class="code">TPE</div><div class="name">桃園機場 T1</div></div>
+      </div>
+      <div class="kv"><span class="k">出發機場</span><span class="v">10:00（建議）</span></div>
+      <div class="kv"><span class="k">起飛</span><span class="v">12:30</span></div>
+      <div class="kv"><span class="k">抵達桃園</span><span class="v">15:30</span></div>
+      <div class="tiacts" style="margin-top:10px">
+        <a class="mbtn blue" target="_blank" href="https://www.google.com/maps/search/?api=1&query=成田機場第一航廈"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>成田機場 T1</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="chead">
+        <div class="cico" style="background:var(--teal-soft)">🚆</div>
+        <div><div class="ctitle">鎌倉一日交通</div><div class="cmeta">7 / 25（六）</div></div>
+      </div>
+      <div class="kv"><span class="k">去程</span><span class="v">JR 東京車站 → 鎌倉車站（橫須賀線）</span></div>
+      <div class="kv"><span class="k">車程</span><span class="v">約 1 小時</span></div>
+      <div class="kv"><span class="k">出發時間</span><span class="v">06:00 東京車站</span></div>
+      <div class="kv"><span class="k">回程</span><span class="v">鎌倉站 → 東京 → 淺草住宿</span></div>
+      <div class="tiacts" style="margin-top:10px">
+        <a class="mbtn green" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=東京駅&destination=鎌倉駅&travelmode=transit"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>東京→鎌倉路線</a>
+        <a class="mbtn blue" target="_blank" href="https://www.google.com/maps/search/?api=1&query=鎌倉駅"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>鎌倉車站</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="chead">
+        <div class="cico" style="background:var(--purple-soft)">🏃</div>
+        <div><div class="ctitle">皇居晨跑寄物</div><div class="cmeta">7 / 27（一）6:30 開門</div></div>
+      </div>
+      <div class="kv"><span class="k">寄物 / 洗澡</span><span class="v">ASICS RUN TOKYO MARUNOUCHI</span></div>
+      <div class="kv"><span class="k">開門時間</span><span class="v">6:30</span></div>
+      <div class="kv"><span class="k">服務</span><span class="v">跑步行李寄放 + 跑後淋浴</span></div>
+      <div class="kv"><span class="k">跑步路線</span><span class="v">皇居外苑，一圈約 5 km</span></div>
+      <div class="tiacts" style="margin-top:10px">
+        <a class="mbtn rust" target="_blank" href="https://www.google.com/maps/search/?api=1&query=ASICS+RUN+TOKYO+MARUNOUCHI"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>ASICS 丸之內</a>
+        <a class="mbtn green" target="_blank" href="https://www.google.com/maps/search/?api=1&query=皇居外苑"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>皇居外苑</a>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="ctitle" style="margin-bottom:11px;font-size:15px;font-weight:700;">市區移動指南</div>
+      <div class="kv"><span class="k">建議票券</span><span class="v">Suica / Welcome Suica（IC卡）</span></div>
+      <div class="kv"><span class="k">淺草 ↔ 鎌倉</span><span class="v">京成→JR 橫須賀線，約 80 分</span></div>
+      <div class="kv"><span class="k">淺草 ↔ 中野</span><span class="v">東京Metro 銀座線 + 中央線，約 35 分</span></div>
+      <div class="kv"><span class="k">淺草 ↔ 表參道</span><span class="v">銀座線直達，約 25 分</span></div>
+      <div class="kv"><span class="k">淺草 ↔ 澀谷</span><span class="v">半藏門線直達，約 35 分</span></div>
+      <div class="kv"><span class="k">淺草 ↔ 秋葉原</span><span class="v">都營淺草線，約 15 分</span></div>
+    </div>
+  </section>
+
+  <!-- ═══ 住宿 ═══ -->
+  <section class="view" id="v-hotel">
+    <div class="shead">住宿資訊</div>
+    <p class="ssub">以淺草為 5 晚據點，方便往返機場與各區景點。</p>
+
+    <div class="card">
+      <div class="hotelstrip">Tora Hotel Asakusa · 寅ホテル 浅草</div>
+      <div class="kv"><span class="k">飯店全名</span><span class="v">Tora Hotel Asakusa 寅ホテル 浅草</span></div>
+      <div class="kv"><span class="k">地址</span><span class="v">東京都墨田区東駒形 2-13-3</span></div>
+      <div class="kv"><span class="k">最近車站</span><span class="v">本所吾妻橋站（步行約 7 分）</span></div>
+      <div class="kv"><span class="k">入住日期</span><span class="v">7/24（五）Check-in 14:00 後</span></div>
+      <div class="kv"><span class="k">退房日期</span><span class="v">7/28（二）11:00 前</span></div>
+      <div class="tiacts" style="margin-top:12px">
+        <a class="mbtn green" target="_blank" href="https://www.google.com/maps/search/?api=1&query=Tora+Hotel+Asakusa+東京都墨田区東駒形2-13-3"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>導航至飯店</a>
+        <a class="mbtn blue" target="_blank" href="https://www.google.com/maps/search/?api=1&query=本所吾妻橋駅"><svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>本所吾妻橋站</a>
+      </div>
+      <div class="notebox">飯店臨近隅田川，早晨沿河岸慢跑非常方便。距雷門・淺草寺步行約 10 分，出入方便。7/28 退房後行李可先寄放再繼續逛。</div>
+    </div>
+
+    <div class="shead" style="margin-top:20px">逐日入退住安排</div>
+    <div class="card">
+      <div class="kv"><span class="k">7/24（五）</span><span class="v">成田機場入境後約 21:00 辦理入住</span></div>
+      <div class="kv"><span class="k">7/25（六）</span><span class="v">鎌倉日，早出晚歸，回住宿約 23:00</span></div>
+      <div class="kv"><span class="k">7/26（日）</span><span class="v">步行範圍為主，可回飯店中途休息。回住宿約 20:00</span></div>
+      <div class="kv"><span class="k">7/27（一）</span><span class="v">皇居晨跑在 ASICS 換裝，毋需回飯店。晚間約 22:00 回住宿</span></div>
+      <div class="kv"><span class="k">7/28（二）</span><span class="v">11:00 退房，10:00 出發機場，建議退房後行李直接帶走</span></div>
+    </div>
+  </section>
+
+</main>
+
+<nav class="botnav" id="nav">
+  <button class="on" data-v="v-days">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2.5"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="16" y1="2" x2="16" y2="6"/></svg>
+    每日行程
+  </button>
+  <button data-v="v-transit">
+    <svg viewBox="0 0 24 24"><path d="M4 16V7a3 3 0 013-3h10a3 3 0 013 3v9"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/><path d="M4 16h16"/></svg>
+    交通
+  </button>
+  <button data-v="v-hotel">
+    <svg viewBox="0 0 24 24"><path d="M3 21V9l9-6 9 6v12"/><path d="M9 21v-8h6v8"/></svg>
+    住宿
+  </button>
+</nav>
+
+<script>
+/* ─── ITINERARY DATA (100% from Excel source) ─── */
+const DAYS = [
+  {
+    date:"7/24", wd:"五", theme:"淺草市區", icon:"🛬",
+    desc:"桃園出發，飛越海峽，抵達東京第一夜",
+    items:[
+      {t:"13:00", cat:"transit", em:"🚌", title:"出發前往桃園機場 T1",
+       sub:"建議提早 2.5 小時到達機場辦理登機手續",
+       map:"桃園國際機場第一航廈"},
+      {t:"15:30", cat:"transit", em:"✈️", title:"桃園機場 T1 起飛",
+       sub:"飛往東京成田機場，飛行時間約 3.5 小時",
+       map:"桃園國際機場第一航廈"},
+      {t:"20:00", cat:"transit", em:"🛬", title:"成田機場 T1 抵達",
+       sub:"入境審查 → 提領行李 → 入境大廳",
+       map:"成田空港第1ターミナル",
+       note:"若提前辦理日本 SIM 或 Wi-Fi 分享器，可在入境大廳取取機"},
+      {t:"21:00", cat:"transit", em:"🚆", title:"京成電鐵 Access 特急",
+       sub:"成田機場 → 淺草站 → 本所吾妻橋站，約 60 分鐘，建議購 Suica 直接刷卡",
+       map:"本所吾妻橋駅"},
+      {t:"22:00", cat:"rest", em:"🏨", title:"Check in｜Tora Hotel Asakusa 寅ホテル 浅草",
+       sub:"東京都墨田区東駒形 2-13-3，本所吾妻橋站步行約 7 分",
+       map:"Tora Hotel Asakusa 東京都墨田区東駒形2-13-3"},
+      {t:"23:00", cat:"food", em:"🍽️", title:"晚餐｜Kaminarimon Kisuke",
+       sub:"雷門近旁老字號，提供日式居酒屋料理，深夜也可進入",
+       map:"Kaminarimon Kisuke 浅草"},
+      {t:"深夜", cat:"food", em:"🌙", title:"宵夜",
+       sub:"淺草周邊深夜小吃或便利商店，好好休息迎接明天鎌倉"}
+    ]
+  },
+  {
+    date:"7/25", wd:"六", theme:"鎌倉一日", icon:"⛩️",
+    desc:"千年古都．大佛・鳥居・老街・咖哩，一日鎌倉精華",
+    items:[
+      {t:"06:00", cat:"transit", em:"🚆", title:"JR 東京車站 → 鎌倉車站",
+       sub:"JR 橫須賀線，車程約 1 小時。建議車站附近買早餐再上車",
+       map:"鎌倉駅",
+       note:"週末人多，建議 06:00 前到東京車站"},
+      {t:"07:00", cat:"food", em:"🍳", title:"早餐｜朝食屋コバカバ",
+       sub:"鎌倉駅東口徒步約 2 分，人氣和式定食早餐，麥飯 + 魚 + 味噌湯套餐",
+       map:"朝食屋コバカバ 鎌倉",
+       note:"早開，7:00 即可入座，建議早到避免等位"},
+      {t:"08:00", cat:"sight", em:"⛩️", title:"佐助稻荷神社",
+       sub:"隱身在山中的千本鳥居，氣氛神秘；由車站步行約 20 分鐘可達，清晨人少最美",
+       map:"佐助稲荷神社 鎌倉"},
+      {t:"09:00", cat:"food", em:"☕", title:"☕ paso by 27 COFFEE ROASTERS",
+       sub:"鎌倉自家烘焙精品咖啡小店，空間質感佳，適合早午咖啡一杯",
+       map:"paso by 27 COFFEE ROASTERS 鎌倉"},
+      {t:"10:00", cat:"sight", em:"🗿", title:"鎌倉大佛（高德院）",
+       sub:"高 13.35 公尺青銅大佛，鑄於 1252 年，可入內參觀大佛腹部空間",
+       map:"高徳院 鎌倉大仏",
+       note:"門票 ¥300（大佛腹部另 ¥20）／開放 8:00–17:30"},
+      {t:"11:00", cat:"food", em:"🐟", title:"午餐｜🍽️ Umi Batake Hase Ten",
+       sub:"長谷地區海景料理，使用在地食材，午間定食性價比高",
+       map:"うみ畑 長谷店 鎌倉"},
+      {t:"12:00", cat:"food", em:"🍦", title:"🍦 KANNON COFFEE kamakura",
+       sub:"長谷觀音旁網紅甜點咖啡廳，鬆餅 + 拿鐵為招牌，座位有限請提早",
+       map:"KANNON COFFEE kamakura"},
+      {t:"14:00", cat:"shop", em:"🛍️", title:"🛍️ 小町通商店街",
+       sub:"鎌倉駅前最熱鬧步行商店街，滿滿土產・甜食・小雜貨，邊走邊吃超享受",
+       map:"小町通り 鎌倉"},
+      {t:"15:00", cat:"food", em:"🍱", title:"🍽️ 鎌倉釜飯｜かまかま本店",
+       sub:"鎌倉名物釜飯，現點現烹需等候約 20–30 分鐘，湯頭鮮甜值得等",
+       map:"鎌倉釜飯かまかま本店"},
+      {t:"17:00", cat:"sight", em:"⛩️", title:"鶴岡八幡宮",
+       sub:"源賴朝所建，鎌倉最重要神社。本宮在石段頂端，俯瞰鎌倉全景壯觀",
+       map:"鶴岡八幡宮",
+       note:"免費參觀 / 日落時分光線最美"},
+      {t:"18:00", cat:"food", em:"🍛", title:"晚餐｜🍛 キャラウェイ",
+       sub:"鎌倉超人氣咖哩老店，排隊名物，歐風咖哩醬搭白飯，滋味深厚",
+       map:"キャラウェイ 鎌倉",
+       note:"現金為主，排隊時間約 20–40 分"},
+      {t:"20:00", cat:"shop", em:"👕", title:"UNIQLO GRANSTA 東京店",
+       sub:"東京駅 GRANSTA 地下商場，10 點關門前快速採購服飾",
+       map:"UNIQLO GRANSTA東京店",
+       note:"22:00 關門，回東京後進站直達"},
+      {t:"21:00", cat:"shop", em:"🎮", title:"唐吉訶德 秋葉原店",
+       sub:"24 小時營業，電器・動漫・零食・藥妝・生活雜物，鎌倉日回程順路掃貨",
+       map:"ドン・キホーテ 秋葉原店"},
+      {t:"23:00", cat:"transit", em:"🏠", title:"回淺草住宿",
+       sub:"搭地鐵回 Tora Hotel Asakusa 寅ホテル 浅草",
+       map:"本所吾妻橋駅"}
+    ]
+  },
+  {
+    date:"7/26", wd:"日", theme:"淺草・中野", icon:"🎌",
+    desc:"河邊晨跑・昭和喫茶・老寺市場・中野二手錶巡禮",
+    items:[
+      {t:"05:30", cat:"run", em:"🏃", title:"隅田川河邊晨跑",
+       sub:"由 Tora Hotel 出發，沿隅田川堤防南北跑，視野開闊；推薦路線：飯店 → 吾妻橋 → 隅田公園 折返，約 5 km",
+       map:"隅田公園",
+       note:"夏季早晨涼爽，建議 5:30 前出發趁日出"},
+      {t:"07:00", cat:"food", em:"☕", title:"早餐｜昔ながらの喫茶店 友路有",
+       sub:"淺草昭和風懷舊純喫茶，厚切吐司 + 半熟蛋 + 虹吸咖啡，氣氛超好",
+       map:"昔ながらの喫茶店 友路有 浅草"},
+      {t:"08:00", cat:"rest", em:"🚿", title:"返回飯店梳洗整理",
+       sub:"回 Tora Hotel 換裝，準備淺草寺出發"},
+      {t:"10:00", cat:"sight", em:"🛕", title:"淺草寺",
+       sub:"東京最古老寺院（628 年），雷門 → 仲見世通 → 本堂 → 五重塔，建議早到",
+       map:"浅草寺",
+       note:"免費參觀 / 建議 9:30 前抵達人潮較少"},
+      {t:"11:00", cat:"shop", em:"🏮", title:"仲見世通商店街",
+       sub:"淺草寺參道商店街，江戶風格老字號：人形燒、雷おこし、あんこ球等必買土產",
+       map:"仲見世通り 浅草"},
+      {t:"11:00", cat:"food", em:"🍜", title:"午餐｜並木藪蕎麥麵",
+       sub:"11:00 開門，江戶三大藪蕎麥之一；辛口醬汁，口感彈牙，蕎麥香濃郁",
+       map:"並木藪蕎麦",
+       note:"僅收現金 / 建議 11:00 開門即排隊"},
+      {t:"12:00", cat:"food", em:"🥩", title:"淺草炸肉餅",
+       sub:"站著吃的庶民美食，現炸可樂餅與炸肉餅，外皮酥脆，現場就是最美味的醬汁",
+       map:"浅草 メンチカツ"},
+      {t:"12:00", cat:"shop", em:"🎀", title:"三麗鷗（淺草店）",
+       sub:"Hello Kitty、布丁狗、My Melody 等 Sanrio 周邊商品，淺草限定浴衣版值得入手",
+       map:"サンリオ 浅草店"},
+      {t:"13:00", cat:"food", em:"☕", title:"老店咖啡廳｜☕ 珈琲天国",
+       sub:"淺草昭和喫茶代表，自烘咖啡盛入玻璃杯，配手工蛋糕，名物是雞蛋三明治",
+       map:"珈琲天国 浅草"},
+      {t:"14:00", cat:"shop", em:"⌚", title:"中野百老匯｜二手錶市場",
+       sub:"中野百老匯 3–4F，二手腕錶店密集，ROLEX / OMEGA / SEIKO 均有，可殺價。捷運中野站步行 5 分",
+       map:"中野ブロードウェイ",
+       note:"下午 2–3 點後多數店家開門，週日人多"},
+      {t:"17:00", cat:"shop", em:"🎒", title:"mont-bell 新宿南口店",
+       sub:"戶外機能衣物、登山用品、輕量背包一次補齊",
+       map:"mont-bell 新宿南口店",
+       note:"21:00 關門"},
+      {t:"20:00", cat:"transit", em:"🏠", title:"回淺草住宿",
+       sub:"返回 Tora Hotel Asakusa 寅ホテル 浅草",
+       map:"本所吾妻橋駅"}
+    ]
+  },
+  {
+    date:"7/27", wd:"一", theme:"東京・表參道", icon:"🏛️",
+    desc:"皇居晨跑・銀座老咖啡・明治神宮・表參道購物衝刺",
+    items:[
+      {t:"05:00", cat:"transit", em:"🚌", title:"出發至丸之內",
+       sub:"前往 ASICS RUN TOKYO MARUNOUCHI，6:30 開門前到達等候",
+       map:"ASICS RUN TOKYO MARUNOUCHI"},
+      {t:"06:30", cat:"run", em:"🏃", title:"皇居慢跑",
+       sub:"皇居外苑跑道一圈 5 km，東京最知名晨跑聖地。清晨跑者眾多，夏季建議帶水",
+       map:"皇居外苑",
+       note:"ASICS 丸之內提供跑後淋浴及行李寄放服務"},
+      {t:"08:00", cat:"rest", em:"🚿", title:"跑後淋浴梳整",
+       sub:"ASICS RUN TOKYO MARUNOUCHI 設施內洗澡換裝"},
+      {t:"09:00", cat:"food", em:"🍜", title:"早餐｜六厘舍（東京站東京拉麵街）",
+       sub:"東京駅 B1「東京拉麵街」名店，濃厚豚骨沾麵（つけ麺），湯底濃郁深度十足",
+       map:"六厘舎 東京ラーメンストリート",
+       note:"平日早上人相對少，建議 9:00 前入座"},
+      {t:"11:00", cat:"food", em:"☕", title:"☕ Cafe de l'Ambre｜カフェ ド ランブル",
+       sub:"1948 年創業，銀座傳奇老牌咖啡。自烘古酒咖啡豆，店主至今仍親制，喝的是歷史",
+       map:"カフェ ド ランブル 銀座",
+       note:"約 ¥900–1,500 / 杯．需確認週一是否公休"},
+      {t:"14:00", cat:"sight", em:"⛩️", title:"明治神宮",
+       sub:"1920 年竣工，東京最重要神社之一。參道長達 700 公尺，被高大常綠樹林圍繞，都心中的靜謐森林",
+       map:"明治神宮",
+       note:"免費參觀 / 開放日出至日落"},
+      {t:"15:00", cat:"shop", em:"👟", title:"鬼塚虎（表參道旗艦店）",
+       sub:"Onitsuka Tiger 表參道旗艦店，限定色款、客製刺繡服務，海外買家最愛朝聖地點",
+       map:"Onitsuka Tiger 表参道"},
+      {t:"17:00", cat:"shop", em:"🛍️", title:"niko and ... TOKYO",
+       sub:"原宿大型選品概念店，服裝・雜貨・文具・咖啡複合空間，日本限定設計感商品聚集",
+       map:"niko and... TOKYO 原宿"},
+      {t:"18:00", cat:"food", em:"🍜", title:"晚餐｜一蘭（澀谷店）",
+       sub:"個人隔間拉麵始祖，豚骨白湯，可自訂湯底濃度・辣度・蔥量・叉燒數量",
+       map:"一蘭 渋谷店"},
+      {t:"22:00", cat:"transit", em:"🏠", title:"回淺草住宿",
+       sub:"返回 Tora Hotel Asakusa 寅ホテル 浅草，今晚收拾行李準備明日回程",
+       map:"本所吾妻橋駅"}
+    ]
+  },
+  {
+    date:"7/28", wd:"二", theme:"返程", icon:"✈️",
+    desc:"最後早餐，道別東京，飛回桃園",
+    items:[
+      {t:"07:00", cat:"food", em:"🥐", title:"早餐｜Der Koffer",
+       sub:"德式風格麵包咖啡廳，手工酥皮可頌 + 黑咖啡，旅行最後一頓悠閒早晨",
+       map:"Der Koffer 東京"},
+      {t:"10:00", cat:"transit", em:"🚆", title:"出發前往成田機場",
+       sub:"建議搭乘京成 Skyliner 或 Access 特急，約 60 分鐘。11:30 前抵達機場辦理登機",
+       map:"成田空港第1ターミナル",
+       note:"退房後行李打包好直接出發，勿錯過班機"},
+      {t:"12:30", cat:"transit", em:"✈️", title:"成田機場 T1 起飛",
+       sub:"班機返回桃園，在機上好好休息回顧這 5 天的美好記憶",
+       map:"成田空港第1ターミナル"},
+      {t:"15:30", cat:"transit", em:"🛬", title:"桃園機場 T1 抵達",
+       sub:"東京・鎌倉 5 日行程圓滿結束，帶著滿滿戰利品和回憶回家",
+       map:"桃園國際機場第一航廈"}
+    ]
+  }
+];
+
+const CAT = {
+  food:{label:"美食",em:"🍽️"},
+  transit:{label:"交通",em:"🚆"},
+  sight:{label:"景點",em:"🏛️"},
+  shop:{label:"購物",em:"🛍️"},
+  run:{label:"晨跑",em:"🏃"},
+  rest:{label:"休息",em:"💤"}
+};
+
+/* pin svg */
+const PIN = `<svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z"/></svg>`;
+
+function mapBtn(q, label, cls="green") {
+  return `<a class="mbtn ${cls}" target="_blank"
+    href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}">
+    ${PIN}${label}</a>`;
+}
+
+function renderDay(idx) {
+  const d = DAYS[idx];
+  let h = `
+    <div class="dhero">
+      <div class="dtag">${d.date}（${d.wd}）</div>
+      <h2>${d.icon}　${d.theme}</h2>
+      <div class="ds">${d.desc}</div>
+    </div>
+    <div class="tl">`;
+  d.items.forEach(it => {
+    const cat = CAT[it.cat] || {label:it.cat, em:"·"};
+    const note = it.note ? `<div class="tinote">ℹ️ ${it.note}</div>` : "";
+    const acts = it.map ? `<div class="tiacts">${mapBtn(it.map, "開啟導航")}</div>` : "";
+    h += `
+      <div class="ti ${it.cat}">
+        <div class="tidot">${it.em}</div>
+        <div class="ticard">
+          <div class="titop">
+            <span class="titime">${it.t}</span>
+            <span class="ticat">${cat.label}</span>
+          </div>
+          <div class="tititle">${it.title}</div>
+          ${it.sub ? `<div class="tisub">${it.sub}</div>` : ""}
+          ${note}${acts}
+        </div>
+      </div>`;
+  });
+  h += "</div>";
+  document.getElementById("dayout").innerHTML = h;
+}
+
+function renderRail() {
+  const rail = document.getElementById("rail");
+  rail.innerHTML = DAYS.map((d, i) => `
+    <div class="dtab${i===0?" on":""}" data-i="${i}">
+      <span class="dw">${d.date}（${d.wd}）</span>
+      <span class="di">${d.icon}</span>
+      <span class="dd" style="font-size:11px;color:${i===0?"rgba(255,255,255,.75)":"var(--ink-mid)"};">${d.theme}</span>
+    </div>`).join("");
+  rail.querySelectorAll(".dtab").forEach(el => {
+    el.addEventListener("click", () => {
+      rail.querySelectorAll(".dtab").forEach(e => {
+        e.classList.remove("on");
+        e.querySelector(".dd").style.color = "var(--ink-mid)";
+      });
+      el.classList.add("on");
+      el.querySelector(".dd").style.color = "rgba(255,255,255,.75)";
+      renderDay(+el.dataset.i);
+      window.scrollTo({top:0, behavior:"smooth"});
+    });
+  });
+}
+
+/* nav */
+document.getElementById("nav").querySelectorAll("button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".botnav button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+    document.getElementById(btn.dataset.v).classList.add("active");
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+});
+
+renderRail();
+renderDay(0);
+</script>
+</body>
+</html>
